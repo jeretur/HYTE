@@ -37,7 +37,31 @@ app.get('/items/:id', (req, res) => {
 });
 
 // TOOD: add PUT route
+
+app.put('/items/:id', (req, res) => {
+  console.log('update item with id', req.params.id);
+  const itemIndex = items.findIndex((item) => item.id == req.params.id);
+  res.json(itemIndex);
+  if (itemIndex !== -1) {
+    items[itemIndex] = { id: items[itemIndex].id, ...req.body };
+    res.json({ message: 'Item updated', item: items[itemIndex] });
+  } else {
+    res.status(404).json({ message: 'Item not found' });
+  }
+});
+
 // TODO add DELETE route
+app.delete('/items/:id', (req, res) => {
+  console.log('delete item with id', req.params.id);
+  const itemIndex = items.findIndex((item) => item.id == req.params.id);
+  if (itemIndex !== -1) {
+    items.splice(itemIndex, 1);
+    res.json({ message: 'Item deleted' });
+  } else {
+    res.status(404).json({ message: 'Item not found' });
+  }
+});
+
 
 // Add new item
 app.post('/items', (req, res) => {

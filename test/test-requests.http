@@ -12,3 +12,14 @@ POST http://localhost:3000/items
 Content-Type: application/json
 
 {"name": "Kaurahiutale"}
+
+### GET item by ID
+GET http://localhost:3000/items/1
+### Update item by ID
+PUT http://localhost:3000/items/3
+Content-Type: application/json
+
+{"name": "Pähkinä"}
+
+### DELETE item by ID
+DELETE http://localhost:3000/items/2
