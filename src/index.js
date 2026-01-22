@@ -21,21 +21,21 @@ app.get('/', (req, res) => {
 
 // Endpoints for items resource
 // Get all items
-app.get('/items', getItems);
+app.get('/api/items', getItems);
 
 // Get items based on id
-app.get('/items/:id', getItemById);
+app.get('/api/items/:id', getItemById);
 
 // TOOD: add PUT route
 
-app.put('/items/:id', putItemById );
+app.put('/api/items/:id', putItemById );
 
 // TODO add DELETE route
-app.delete('/items/:id', deleteItemById);
+app.delete('/api/items/:id', deleteItemById);
 
 
 // Add new item
-app.post('/items', postItem );
+app.post('/api/items', postItem );
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);

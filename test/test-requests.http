@@ -2,24 +2,27 @@
 
 ### use with: REST Client extension
 
+@apiurl = http://localhost:3000/api
+
 ### GET all items
 
-GET http://localhost:3000/items
+GET {{apiurl}}/items
 
 ### Add new item
 
-POST http://localhost:3000/items
+POST {{apiurl}}/items
 Content-Type: application/json
 
 {"name": "Kaurahiutale"}
 
 ### GET item by ID
-GET http://localhost:3000/items/1
+GET {{apiurl}}/items/1
+
 ### Update item by ID
-PUT http://localhost:3000/items/3
+PUT {{apiurl}}/items/3
 Content-Type: application/json
 
 {"name": "Pähkinä"}
 
 ### DELETE item by ID
-DELETE http://localhost:3000/items/2
+DELETE {{apiurl}}/items/2
