@@ -46,6 +46,16 @@ CREATE TABLE Exercises (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
+CREATE TABLE ExerciseResults (
+    result_id INT AUTO_INCREMENT PRIMARY KEY,
+    exercise_id INT NOT NULL,
+    user_id INT NOT NULL,
+    ddate DATE NOT NULL,
+    duration INT NOT NULL,
+    FOREIGN KEY (exercise_id) REFERENCES Exercises(exercise_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
 -- Insert sample data
 
 INSERT INTO Users (username, password, email, created_at, user_level) VALUES
@@ -76,3 +86,12 @@ INSERT INTO Exercises (user_id, type, duration, intensity, date) VALUES
 (3, 'Swimming', 60, 'Low', '2024-01-18'),
 (3, 'Yoga', 50, 'Low', '2024-01-18'),
 (1, 'Weight Training', 40, 'High', '2024-01-19');
+
+INSERT INTO ExerciseResults (exercise_id, user_id, ddate, duration) VALUES
+(1, 1, '2024-01-10', 30),
+(2, 3, '2024-01-11', 45),
+(3, 2, '2024-01-12', 55),
+(4, 1, '2024-01-16', 30),
+(5, 3, '2024-01-18', 60),
+(6, 3, '2024-01-18', 50),
+(7, 1, '2024-01-19', 40);
