@@ -1,12 +1,7 @@
-// Dummy data (nollataan aina kun sovelluksen käynnistää uudelleen)
-const items = [
-  {id: 1, name: 'Maitorahka'},
-  {id: 2, name: 'Banaani'},
-  {id: 3, name: 'Hunaja'},
-];
+import items from '../models/item-model.js';
 
 const getItems = (req, res) => {
-  res.json(items);
+res.json(items);
 };
 
 const getItemById = (req, res) => {
@@ -55,4 +50,10 @@ const postItem = (req, res) => {
   }
 };
 
-export { getItems, getItemById, putItemById, deleteItemById, postItem };
+export {
+  getItems,
+  getItemById,
+  putItemById,
+  deleteItemById,
+  postItem,
+};
