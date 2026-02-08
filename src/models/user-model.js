@@ -1,22 +1,30 @@
-const users = [
-  {
-    id: 1,
-    username: 'johndoe',
-    password: 'password1',
-    email: 'johndoe@example.com',
-  },
-  {
-    id: 2,
-    username: 'janedoe',
-    password: 'password2',
-    email: 'janedoe@example.com',
-  },
-  {
-    id: 3,
-    username: 'bobsmith',
-    password: 'password3',
-    email: 'bobsmith@example.com',
-  },
-];
+// user-model.js
+import promisePool from '../utils/database.js';
 
-export default users;
+const listAllUsers = async () => {
+  const [rows] = await promisePool.query('SELECT * FROM Users');
+  return rows;
+};
+
+const findUserById = async (id) => {
+  const [rows] = await promisePool.execute(
+    'SELECT * FROM Users WHERE user_id = ?',
+    [id]
+  );
+  return rows[0];
+};
+
+const addUser = async (user) => {
+  const { username, password, email } = user;
+
+  // Insert into Users table
+  const [result] = await promisePool.execute(
+    'INSERT INTO Users (username, password, email) VALUES (?, ?, ?)',
+    [username, password, email]
+  );
+
+  return { user_id: result.insertId }; // return the new user's ID
+};
+
+export { listAllUsers, findUserById, addUser };
+

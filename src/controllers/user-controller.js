@@ -1,87 +1,61 @@
-import users from '../models/user-model.js';
+// user-controller.js
+import {listAllUsers, findUserById, addUser} from '../models/user-model.js';
 
+const getUsers = async (req, res) => {
+  try {
+    const users = await listAllUsers();
 
-const getUsers = (req, response) => {
-  // ÄLÄ IKINÄ lähetä salasanoja HTTP-vastauksessa
-  for (let i = 0; i < users.length; i++) {
-    delete users[i].password;
-    // kaikki emailit sensuroitu esimerkki
-    // users[i].email = 'sensored';
+    // remove passwords before sending
+    const safeUsers = users.map((u) => {
+      const {password, ...rest} = u; // eslint-disable-line no-unused-vars
+      return rest;
+    });
+
+    res.json(safeUsers);
+  } catch (e) {
+    res.status(500).json({error: e.message});
   }
-  response.json(users);
 };
 
-// TODO: getUserById
-
-  const getUserById = (req, res) => {
-    const userId = parseInt(req.params.id);
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      const userCopy = {...user};
-      delete userCopy.password; // Älä lähetä salasanaa
-      return res.json(userCopy);
+const getUserById = async (req, res) => {
+  try {
+    const user = await findUserById(req.params.id); // get ID from URL
+    if (!user) {
+      return res.status(404).json({error: 'User not found'});
     }
-    res.status(404).json({error: 'user not found'});
-  };
-// TODO: putUserById
 
-  const putUserById = (req, res) => {
-    console.log('update user with id', req.params.id);
-    const userIndex = users.findIndex((user) => user.id == req.params.id);
-    if (userIndex !== -1) {
-      users[userIndex] = { id: parseInt(req.params.id), ...req.body };
-      res.json({ message: 'User updated', user: users[userIndex] });
-    } else {
-      res.status(404).json({ message: 'User not found' });
-    }
-  };
+    // remove password before sending
+    const {password: _, ...safeUser} = user;
 
-// TODO: deleteUserById
-
-  const deleteUserById = (req, res) => {
-    const userId = parseInt(req.params.id);
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex !== -1) {
-      users.splice(userIndex, 1);
-      return res.json({message: 'user deleted'});
-    }
-    res.status(404).json({error: 'user not found'});
-  };
-
-
-
-// Käyttäjän lisäys (rekisteröityminen)
-const postUser = (pyynto, vastaus) => {
-  const newUser = pyynto.body;
-  // Uusilla käyttäjillä pitää olla kaikki vaaditut ominaisuudet tai palautetaan virhe
-  // itse koodattu erittäin yksinkertainen syötteen validointi
-  if (!(newUser.username && newUser.password && newUser.email)) {
-    return vastaus.status(400).json({error: 'required fields missing'});
+    res.json(safeUser);
+  } catch (e) {
+    res.status(500).json({error: e.message});
   }
-
-  // HUOM: ÄLÄ ikinä loggaa käyttäjätietoja ensimmäisten pakollisten testien jälkeen!!! (tietosuoja)
-  //console.log('registering new user', newUser);
-  const newId = users[users.length - 1].id + 1;
-  // luodaan uusi objekti, joka sisältää id-ominaisuuden ja kaikki newUserObjektin
-  // ominaisuudet ja lisätään users-taulukon loppuun
-  users.push({id: newId, ...newUser});
-  delete newUser.password;
-  console.log('users', users);
-  vastaus.status(201).json({message: 'new user added', user_id: newId});
 };
 
-const postLogin = (req, res) => {
-  const {username, password} = req.body;
-  // haetaan käyttäjä-objekti käyttäjän nimen perusteella
-  const userFound = users.find(user => username === user.username);
-  if (userFound) {
-    if (userFound.password === password) {
-      delete userFound.password;
-      return res.json({message: 'login ok', user: userFound});
-    }
-    return res.status(403).json({error: 'invalid password'});
+const postUser = async (req, res) => {
+  const { username, password, email } = req.body;
+
+  // simple validation
+  if (!username || !password || !email) {
+    return res.status(400).json({ error: 'Required fields missing' });
   }
-  res.status(404).json({error: 'user not found'});
+
+  try {
+    const result = await addUser({ username, password, email });
+
+    res.status(201).json({
+      message: 'New user added',
+      user_id: result.user_id
+    });
+  } catch (e) {
+    // handle duplicate username/email errors
+    if (e.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+    res.status(500).json({ error: e.message });
+  }
 };
 
-export {getUsers, postUser, postLogin, getUserById, putUserById, deleteUserById};
+
+export {getUsers, getUserById, postUser};
